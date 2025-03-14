@@ -1,0 +1,6 @@
+{
+    "AZURE_BLOB_SAS_URL": "your_connection_string",
+    "CONTAINER_NAME": "your_container_name",
+    "SRC_DIR": "source_directory"
+  }
+  

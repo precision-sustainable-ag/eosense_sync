@@ -27,9 +27,11 @@ def cleanup_old_logs():
 with open("config/config.json", "r") as file:
     config = json.load(file)
 
-# Replace with your Azure Storage account details
+# Pull setup from config.json
 AZURE_BLOB_SAS_URL = config["AZURE_BLOB_SAS_URL"]
 CONTAINER_NAME = config["CONTAINER_NAME"]
+src_dir = config["SRC_DIR"]
+
 
 def list_blobs():
     try:
@@ -46,8 +48,7 @@ def list_blobs():
 def list_local_files():
     try:
         logging.info("Listing local files in project directory")
-        parent_directory = os.path.dirname(os.path.abspath(__file__))
-        local_files = [f for f in os.listdir(parent_directory) if os.path.isfile(os.path.join(parent_directory, f))]
+        local_files = [f for f in os.listdir(src_dir) if os.path.isfile(os.path.join(src_dir, f))]
         logging.info(f"Found {len(local_files)} local files")
         return local_files
     except Exception as e:
@@ -67,10 +68,9 @@ def upload_files(files):
         logging.info("Uploading missing files to Azure Blob Storage")
         blob_service_client = BlobServiceClient(account_url=AZURE_BLOB_SAS_URL)
         container_client = blob_service_client.get_container_client(CONTAINER_NAME)
-        parent_directory = os.path.dirname(os.path.abspath(__file__))
         
         for file in files:
-            file_path = os.path.join(parent_directory, file)
+            file_path = os.path.join(src_dir, file)
             blob_client = container_client.get_blob_client(file)
             
             with open(file_path, "rb") as data:
