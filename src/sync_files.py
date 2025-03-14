@@ -5,11 +5,14 @@ import glob
 from datetime import datetime, timedelta
 from azure.storage.blob import BlobServiceClient
 
+# TODO: either write the logs to src_dir OR also check files in the logs dir
+
 # Configure logging with datetime-based filenames
 log_directory = "logs"
 os.makedirs(log_directory, exist_ok=True)
 log_file = os.path.join(log_directory, f"blob_sync_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log")
 logging.basicConfig(filename=log_file, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 
 # Function to clean up logs older than 30 days
 def cleanup_old_logs():
@@ -24,10 +27,11 @@ def cleanup_old_logs():
         except ValueError:
             pass  # Skip files that don't match expected format
 
+
+# Pull setup from config.json
 with open("config/config.json", "r") as file:
     config = json.load(file)
 
-# Pull setup from config.json
 AZURE_BLOB_SAS_URL = config["AZURE_BLOB_SAS_URL"]
 CONTAINER_NAME = config["CONTAINER_NAME"]
 src_dir = config["SRC_DIR"]
@@ -45,6 +49,7 @@ def list_blobs():
         logging.error(f"Error listing blobs: {e}")
         return []
 
+
 def list_local_files():
     try:
         logging.info("Listing local files in project directory")
@@ -55,6 +60,7 @@ def list_local_files():
         logging.error(f"Error listing local files: {e}")
         return []
 
+
 def compare_files():
     logging.info("Comparing local files with Azure Blob Storage")
     blobs = list_blobs()
@@ -62,6 +68,7 @@ def compare_files():
     missing_files = [file for file in local_files if file not in blobs]
     logging.info(f"Found {len(missing_files)} files missing from Azure Blob Storage")
     return missing_files
+
 
 def upload_files(files):
     try:
@@ -77,6 +84,7 @@ def upload_files(files):
                 blob_client.upload_blob(data, overwrite=True)
     except Exception as e:
         logging.error(f"Error uploading files: {e}")
+
 
 if __name__ == "__main__":
     logging.info("Starting Azure Blob Storage sync process")
