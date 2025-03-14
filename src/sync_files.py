@@ -80,6 +80,7 @@ def upload_files(files):
 
 if __name__ == "__main__":
     logging.info("Starting Azure Blob Storage sync process")
+    cleanup_old_logs()
     missing_files = compare_files()
     if missing_files:
         # upload_files(missing_files) # commented out for testing
