@@ -2,3 +2,4 @@ venv/
 config.json
 logs/
 test_sandbox/
+.DS_Store
