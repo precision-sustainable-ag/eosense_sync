@@ -29,7 +29,7 @@ def cleanup_old_logs():
 
 
 # Pull setup from config.json
-with open("config/config.json", "r") as file:
+with open("config.json", "r") as file:
     config = json.load(file)
 
 AZURE_BLOB_SAS_URL = config["AZURE_BLOB_SAS_URL"]
