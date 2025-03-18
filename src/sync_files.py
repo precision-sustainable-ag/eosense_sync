@@ -53,9 +53,21 @@ def list_blobs():
 def list_local_files():
     try:
         logging.info("Listing local files in project directory")
-        local_files = [f for f in os.listdir(src_dir) if os.path.isfile(os.path.join(src_dir, f))]
-        logging.info(f"Found {len(local_files)} local files")
-        return local_files
+        local_files = [
+            f for f in os.listdir(src_dir) 
+            if os.path.isfile(os.path.join(src_dir, f))
+            ]
+        
+        # threshold = datetime.datetime.now() - datetime.timedelta(hours=24)
+        threshold = datetime.datetime.now().timestamp()-24*60*60
+
+        stable_files = [
+            f for f in local_files 
+            #if datetime.datetime.fromtimestamp(os.path.getmtime(os.path.join(src_dir, f))) < threshold
+            if os.path.getmtime(os.path.join(src_dir, f)) < threshold
+        ]
+        logging.info(f"Found {len(stable_files)} local files")
+        return stable_files
     except Exception as e:
         logging.error(f"Error listing local files: {e}")
         return []
